@@ -24,5 +24,6 @@ class FlightSearch:
         response = requests.get(url=f"{TEQUILA_ENDPOINT}/locations/query", headers=header, params=params)
         response.raise_for_status()
         data = response.json()
+        print(data)
         iata_code = data["locations"][0]["id"]
         return iata_code
