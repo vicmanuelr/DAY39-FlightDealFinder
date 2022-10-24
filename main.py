@@ -1,7 +1,17 @@
 from data_manager import DataManager
 from flight_search import FlightSearch
+import datetime
 # This file will need to use the DataManager,FlightSearch, FlightData, NotificationManager classes to achieve the
 # program requirements.
+DEPARTURE_CITY = "Guatemala"
+DEPARTURE_AIRPORT = "GUA"
+CURRENCY = "USD"
+MINIMUN_STAY = 8
+MAXIMUN_STAY = 25
+FLIGHT_TYPE = "round"
+ADULTS = 2
+CHILDREN = 0
+INFANTS = 1
 
 spreadsheet_data = DataManager()
 
@@ -9,11 +19,24 @@ spreadsheet_data = DataManager()
 i = 0
 for entry in spreadsheet_data.data_list:
     try:
-        if len(entry["iataCode"]) == 0:
-            new_iata = FlightSearch(entry).get_iata_code()
-            spreadsheet_data.update_iata(index=i, new_iata_code=new_iata)
+        if len(entry["iataCode"]) == 0 or len(entry["airportName"]) == 0:
+            new_iata, new_airport = FlightSearch(entry).get_airport()
+            spreadsheet_data.update_airport(index=i, new_iata_code=new_iata, new_airport_name=new_airport)
     except KeyError:
-        new_iata = FlightSearch(entry).get_iata_code()
-        spreadsheet_data.update_iata(index=i, new_iata_code=new_iata)
+        new_iata, new_airport = FlightSearch(entry).get_airport()
+        spreadsheet_data.update_airport(index=i, new_iata_code=new_iata, new_airport_name=new_airport)
     finally:
         i += 1
+
+date_from = datetime.date.today().strftime("%d/%m/%Y")
+six_months = datetime.timedelta(days=30) * 6
+date_to = (datetime.date.today() + six_months).strftime("%d/%m/%Y")
+flights = []
+i = 0
+for row in spreadsheet_data.data_list:
+    flight_data = FlightSearch(row).search_cheap_flights(departure_airport=DEPARTURE_AIRPORT, date_from=date_from, date_to=date_to, destination_airport=row["iataCode"], currency=CURRENCY,
+                                           min_stay=MINIMUN_STAY, max_stay=MAXIMUN_STAY, adults=ADULTS, children=CHILDREN, infants=INFANTS, flight_type=FLIGHT_TYPE, destination_city=row["city"])
+    if flight_data is not None:
+        if row["lowestPrice"] > flight_data.price:
+            spreadsheet_data.update_price(index=i, new_price=flight_data.price)
+    i += 1
