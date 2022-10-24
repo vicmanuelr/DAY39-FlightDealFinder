@@ -65,4 +65,3 @@ class FlightSearch:
         else:
             print(f"{flight_data.destination_city}: ${flight_data.price}")
             return flight_data
-        
