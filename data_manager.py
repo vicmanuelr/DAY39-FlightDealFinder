@@ -8,7 +8,9 @@ class DataManager:
     # This class is responsible for talking to the Google Sheet.
     def __init__(self):
         self.data_list = []
+        self.users_list = []
         self.get_sheet_data()
+        self.get_users()
 
     def get_sheet_data(self):
         """This will get data in a list from spreadsheet"""
@@ -35,3 +37,10 @@ class DataManager:
         index += 2
         response = requests.put(url=f"{SHEETY_ENDPOINT}/{index}", json=params)
         response.raise_for_status()
+
+    def get_users(self):
+        """This will get data in a list from spreadsheet users sheet"""
+        response = requests.get(SHEETY_ENDPOINT)
+        response.raise_for_status()
+        data = response.json()
+        self.users_list = data["users"]

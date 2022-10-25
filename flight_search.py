@@ -56,10 +56,15 @@ class FlightSearch:
         data = response.json()
         list_data = data["data"]
         try:
-            flight_data = FlightData(price=list_data[0]["price"], origin_city=list_data[0]["cityFrom"],
-                                     origin_airport=list_data[0]["flyFrom"], destination_city=list_data[0]["cityTo"],
-                                     destination_airport=list_data[0]["flyTo"], out_date=list_data[0]["local_departure"].split("T")[0],
-                                     return_date=list_data[0]["local_arrival"].split("T")[0])
+            flight_data = FlightData(price=list_data[0]["price"],
+                                     origin_city=list_data[0]["cityFrom"],
+                                     origin_airport=list_data[0]["flyFrom"],
+                                     destination_city=list_data[0]["cityTo"],
+                                     destination_airport=list_data[0]["flyTo"],
+                                     out_date=list_data[0]["local_departure"].split("T")[0],
+                                     return_date=list_data[0]["local_arrival"].split("T")[0],
+                                     deep_link=list_data[0]["deep_link"]
+                                     )
         except IndexError:
             print(f"No flights found for {destination_city}")
         else:
